@@ -1,9 +1,11 @@
 <template>
     <v-card>
       <v-form lazy-validation
+        @keyup.native.enter="guardar"
         ref="form" v-model="valido"
         @submit.prevent="guardar">
         <v-card-title>
+
             {{(unidad.id)?'Editar':'Nueva'}} Unidad
             <v-spacer></v-spacer>
             <v-btn icon @click="cerrar">
@@ -11,7 +13,7 @@
             </v-btn>
         </v-card-title>
         <v-card-text>
-            {{ unidad }}
+            
             <v-text-field
                 label="Nombre"
                 :rules="[reglas.requerido]"
@@ -20,6 +22,8 @@
             <v-text-field
                 type="number"
                 label="Orden"
+                min="1"
+                :max="cant+1"
                 v-model="unidad.orden"
             ></v-text-field>
         </v-card-text>
@@ -38,7 +42,7 @@
   export default {
     name: 'UnidadForm',
 
-    props: ['unidad'],
+    props: ['unidad', 'cant'],
 
     data: () => ({
         valido: true,
@@ -50,7 +54,7 @@
     methods: {
         guardar() {
             if(this.$refs.form.validate()) {
-                this.$store.dispatch('curso/nueva_unidad',this.unidad)
+                this.$store.dispatch('unidad/guardar',this.unidad)
                 this.$emit("cerrar")
             }
         },

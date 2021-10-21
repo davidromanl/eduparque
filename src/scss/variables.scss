@@ -1,3 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;700&family=Material+Icons&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;700&family=Audiowide&family=Material+Icons&display=swap');
 
 $body-font-family: 'Source Sans Pro', sans-serif;
+
+$heading-font-family: 'Audiowide', cursive;
+
+@import '~vuetify/src/styles/styles.sass';

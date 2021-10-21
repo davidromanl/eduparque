@@ -16,13 +16,26 @@
 
       gtag('config', 'G-DDES7Q00ZC');
     </script>
-
+    <style>
+      [v-cloak] > * { display: none; }
+      [v-cloak]::before {
+        content: " ";
+        display: block;
+        position: absolute;
+        width: 100px;
+        height: 100px;
+        background-image: url("logo.png");
+        background-size: cover;
+        left: calc(50% - 50px);
+        top: calc(50% - 50px);
+      }
+  </style>
 </head>
   <body>
     <noscript>
       <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
     </noscript>
-    <div id="app"></div>
+    <div id="app" v-cloak></div>
     <!-- built files will be auto injected -->
   </body>
 </html>

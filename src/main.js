@@ -6,9 +6,13 @@ import store from './store'
 
 Vue.config.productionTip = false
 
-new Vue({
+const vm = new Vue({
   vuetify,
   router,
   store,
   render: h => h(App)
-}).$mount('#app')
+})
+
+window.onload = function() {
+  vm.$mount('#app')
+}

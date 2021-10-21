@@ -1,10 +1,12 @@
 <template>
     <v-card>
       <v-form lazy-validation
+        @keyup.native.enter="guardar"
         ref="form" v-model="valido"
         @submit.prevent="guardar">
+        
         <v-card-title>
-            {{(curso.id)?'Editar':'Nuevo'}} Curso
+            {{(actividad.id)?'Editar':'Nueva'}} Actividad
             <v-spacer></v-spacer>
             <v-btn icon @click="cerrar">
                 <v-icon>mdi-close</v-icon>
@@ -14,12 +16,15 @@
             <v-text-field
                 label="Nombre"
                 :rules="[reglas.requerido]"
-                v-model="curso.nombre"
+                v-model="actividad.nombre"
             ></v-text-field>
-            <v-textarea solo
-                label="Descripción"
-                v-model="curso.descripcion"
-            ></v-textarea>
+            <v-text-field
+                type="number"
+                label="Orden"
+                min="1"
+                :max="actividad.orden"
+                v-model="actividad.orden"
+            ></v-text-field>
         </v-card-text>
         <v-card-actions>
             <v-spacer></v-spacer>
@@ -34,9 +39,9 @@
 
 <script>
   export default {
-    name: 'CursoForm',
+    name: 'ActividadForm',
 
-    props: ['curso'],
+    props: ['edit_actividad'],
 
     data: () => ({
         valido: true,
@@ -44,11 +49,16 @@
             requerido: value => !!value || 'Requerido.'
         }
     }),
-
+    computed: {
+        actividad() {
+            return this.edit_actividad.actividad || {}
+        }
+    },
     methods: {
         guardar() {
             if(this.$refs.form.validate()) {
-                this.$store.dispatch('curso/guardar',this.curso)
+
+                this.$store.dispatch('actividad/guardar',this.edit_actividad)
                 this.$emit("cerrar")
             }
         },

@@ -1,6 +1,6 @@
 <template>
   <v-container fluid>
-    <v-row>
+    <v-row >
       <v-col class="pa-0">
       
         <v-fab-transition>
@@ -8,111 +8,293 @@
             v-if="!$store.state.drawer"
             @click="toogleDrawer()" dark
             absolute fixed color="amber darken-2">
-            <v-icon class="mt-3 mb-3" dark>mdi-menu</v-icon>
+            <v-icon class="mt-3 mb-3" dark>mdi-menu-open</v-icon>
           </v-btn>
         </v-fab-transition>
-      
-        <iframe height="440" src="https://www.youtube.com/embed/1qvDPi9ZyJA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <v-responsive :aspect-ratio="16/9">
+          <iframe class="fill-height" :src="'https://www.youtube.com/embed/'+actividad.youtube+'?autoplay='+autoplay"
+            title="YouTube video player" frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen></iframe>
+          </v-responsive>
+        <v-text-field
+          label="Youtube"
+          v-model="actividad.youtube"
+        ></v-text-field>
+        
         <v-toolbar dense color="grey lighten-2">
           <v-icon left large>mdi-book</v-icon>
-          <h2>Fotografía básica</h2>
+          <div>
+            <h3>{{ curso.nombre }}</h3>
+          </div>
           <v-spacer></v-spacer>
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
               <v-btn class="grey mr-2"
                 @click="toogleDrawer()"
-                outlined v-on="on">
-                <v-icon>mdi-menu</v-icon></v-btn>
+                fab small v-on="on">
+                <v-icon>mdi-menu-open</v-icon></v-btn>
             </template>
             <span>Contenido</span>
           </v-tooltip>
           <v-btn-toggle dense>
             <v-tooltip bottom>
               <template v-slot:activator="{ on }">
-                <v-btn v-on="on">
+                <v-btn v-on="on"
+                  :to="'/cursos/'+$route.params.id+'/'+actividades[index-1]"
+                  :disabled="prev_disabled">
                   <v-icon>mdi-arrow-left</v-icon></v-btn>
               </template>
               <span>Anterior</span>
             </v-tooltip>
             <v-tooltip bottom>
               <template v-slot:activator="{ on }">
-                <v-btn color="grey" v-on="on">
+                <v-btn
+                  :to="'/cursos/'+$route.params.id+'/'+actividades[index+1]"
+                  :disabled="next_disabled"
+                  color="grey" v-on="on">
                   <v-icon>mdi-arrow-right</v-icon></v-btn>
               </template>
               <span>Siguiente</span>
             </v-tooltip>
           </v-btn-toggle>
         </v-toolbar>
-        <v-row>
-          <v-col class="pa-8">
-            <h2>Titulo de la Unidad numero 1</h2>
-            <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Dolore deleniti ipsa optio reprehenderit corrupti iste unde saepe beatae quaerat dicta facilis, nisi alias, assumenda autem aspernatur molestiae. Necessitatibus, facilis iste.</p>
-            <p>Comentarios</p>
-            <p>Comentarios</p>
-            <p>Comentarios</p>
-            <v-tabs color="white" background-color="green lighten-1">
-              <v-tab>Recursos</v-tab>
-              <v-tab>Materiales</v-tab>
-            </v-tabs>
-            <v-list-item
-              v-for="n in 5"
-              :key="n"
-            >
-              left item {{ n }}
-            </v-list-item>
-          </v-col>
-        </v-row>
+
+        
+            <v-layout column class="ma-4 pa-2">
+              <v-row>
+                <v-col class="contenido"
+                  :class="{'hide':loading}">
+                  <h2 key="0">{{ actividad.nombre }}</h2>
+                  <div v-if="!admin"
+                    v-html="actividad.descripcion">
+                  </div>
+                  <tiptap-vuetify v-else
+                    v-model="actividad.descripcion"
+                    :extensions="extensions"
+                  />
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col>
+                  <Recursos :id="$route.params.act" />
+                </v-col>
+              </v-row>
+          </v-layout>
+        
+
       </v-col>
-      <v-col cols="12" md="4" class="amber accent-3">
-        <v-textarea
-          filled
-          append-icon="mdi-send"
-          class="mx-2"
-          rows="3" outlined
-          label="Aporte o pregunta"
-          placeholder="Escribe tu aporte o pregunta."
-        ></v-textarea>
-        <v-card color="grey lighten-3">
-          <v-tabs v-model="tab" grow>
-            <v-tab>Aportes</v-tab>
-            <v-tab>Preguntas</v-tab>
-          </v-tabs>
-          <v-tabs-items v-model="tab">
-            <v-tab-item>
-              <v-card flat>
-                <v-card-text>{{tab}} 
-                  <p>Aportes</p>
-                  <p>Aportes</p>
-                  <p>Aportes</p>
-                  <p>Aportes</p>
-                </v-card-text>
-              </v-card>
-            </v-tab-item>
-            <v-tab-item>
-              <v-card flat>
-                <v-card-text>{{tab}}
-                  <p>Preguntas</p>
-                  <p>Preguntas</p>
-                  <p>Preguntas</p>
-                </v-card-text>
-              </v-card>
-            </v-tab-item>
-          </v-tabs-items>
-        </v-card>
+      
+      <v-col cols="12" md="4" class="pa-0 amber">
+        <Aportes :id_actividad="act" />
+          <v-btn color="success"
+            @click="guardar()"
+            v-if="admin"
+          >Guardar</v-btn>
+          <v-btn
+            @click="admin=true"
+            v-else
+            color="primary">Editar</v-btn>
       </v-col>
     </v-row>
+    <v-overlay app absolute
+      z-index="2"
+      :value="overlay">
+      <v-progress-circular
+        indeterminate
+        size="64"
+      ></v-progress-circular>
+    </v-overlay>
   </v-container>
 </template>
 
+<style>
+.contenido img {
+  max-width: 100%;
+}
+
+.contenido {
+  transition-property: all;
+  transition-duration: 300ms;
+  transition-timing-function: ease-in-out;
+  opacity: 1;
+  transform: scaleY(1);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  height: auto;
+}
+.hide {
+  min-height: 400px;
+  opacity: 0;
+}
+</style>
+
 <script>
+import Recursos from '../components/Recursos.vue'
+import Aportes from '../components/Aportes.vue'
+
+import {
+  TiptapVuetify,
+  Heading,
+  Bold,
+  Italic,
+  Strike,
+  Underline,
+  Code,
+  Paragraph,
+  BulletList,
+  OrderedList,
+  Image,
+  ListItem,
+  Link,
+  Blockquote,
+  HardBreak,
+  HorizontalRule,
+  History,
+} from "tiptap-vuetify";
+
+
   export default {
-    name: 'Cursos',
+    name: 'Actividad',
     data: () => ({
-      tab: null,
+      tipoAporte: 'Aporte',
+      loading: false,
+      admin: false,
+      overlay: false,
+      dialog: false,
+      aporte: {},
+      autoplay: 0,
+      options: { duration: 1000, easing: 'easeInOutCubic' },
+      extensions: [
+        History,
+        Blockquote,
+        Link,
+        Underline,
+        Strike,
+        Italic,
+        ListItem,
+        BulletList,
+        OrderedList,
+        [
+          Image,
+          {
+            options: {},
+          },
+        ],
+        [
+          Heading,
+          {
+            options: {
+              levels: [1, 2, 3],
+            },
+          },
+        ],
+        Bold,
+        Code,
+        HorizontalRule,
+        Paragraph,
+        HardBreak,
+      ],
+
     }),
+
+    components: { TiptapVuetify, Recursos, Aportes },
+
+    computed: {
+      curso: function() {
+        return this.$store.state.curso.curso
+      },
+      actividad: function() {
+        return this.$store.state.actividad.actividad || {}
+      },
+      actividades: function() {
+        const actividades = this.$store.state.actividad.actividades || []
+        return actividades.map( ({ id }) => id )
+      },
+      act: function() {
+        return Number(this.$route.params.act) || 0
+      },
+      index: function() {
+        return this.actividades.indexOf(this.act)
+      },
+      prev_disabled() {
+        return this.index === 0
+      },
+      next_disabled() {
+        return this.index === this.actividades.length - 1
+      },
+    },
+
+    watch: {
+      act(v) {
+        this.get_actividad() 
+        return v
+      },
+      overlay (val) {
+        val && setTimeout(() => {
+          this.overlay = false
+          setTimeout(()=>{
+            this.$vuetify.goTo('#app',
+              { duration: 700, easing: 'easeInOutCubic' })
+            }, 500)
+        }, 1500)
+      }
+    },
+
+    created() {
+      const { id } = this.$route.params
+      this.get_actividad()
+      if(this.curso == null)
+        this.$store.dispatch("load_curso", id)
+        //this.$store.dispatch("curso/ver", this.id)
+    },
+
     methods: {
+      async get_actividad() {
+        this.overlay = true
+        this.loading = true
+        await this.delay(300)
+        this.$store.dispatch("actividad/get_actividad", this.act)
+          .then( async () => {
+            await this.delay(300)
+            this.loading = false
+          })
+          
+        //this.autoplay = true
+      },
       toogleDrawer() {
-        this.$store.commit('toogleDrawer')
+        this.$store.state.drawer = !this.$store.state.drawer
+      },
+
+      blur(e) {
+        console.log(e.type)
+      },
+
+
+    //admin
+
+      guardar() {
+        const data = { actividad: this.actividad }
+        this.$store.dispatch("actividad/guardar", data)
+        this.admin = false
+      },
+
+
+      isLoading() {
+        this.loading = !this.loading
+      },
+      async enviarAporte() {
+        this.loading = true
+        this.aportes.push(this.aporte)
+        this.aporte = ''
+        await this.delay(1000)
+        this.loading = false
+      },
+      delay(milisec) {
+        return new Promise(resolve => {
+          setTimeout(() => { resolve('') }, milisec);
+        })
       }
     }
   }
