@@ -11,6 +11,7 @@ router.get('/', async (req, res) => {
     res.json( data )
 })
 
+
 router.get('/:id', async (req, res) => {
     const actividad = await knex('actividades')
             .where(req.params).first('*')
@@ -20,11 +21,10 @@ router.get('/:id', async (req, res) => {
             .join('usuarios as u', 'a.email', 'u.email')
             .where('a.id_actividad',req.params.id)
             .select('a.*','u.id as id_usuario','u.nombre')
-    const data = {
-        actividad, recursos, aportes
-    }
+    const data = { actividad, recursos, aportes }
     res.json( data )
 })
+
 
 router.post('/guardar', async (req, res) => {
     const { descripcion } = req.body
