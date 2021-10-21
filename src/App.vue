@@ -281,11 +281,10 @@
         ><v-icon>mdi-arrow-up</v-icon></v-btn>
       </v-fab-transition>
       <v-fade-transition
-        mode="out-in" 
-        leave-absolute>
+        mode="out-in">
         <router-view></router-view>
       </v-fade-transition>
-
+<!-- 
     <v-dialog
       v-model="dialog"
       fullscreen
@@ -345,7 +344,16 @@
           </v-expansion-panels>
         </v-card-text>
       </v-card>
-    </v-dialog>
+    </v-dialog> -->
+    <v-container fluid>
+      <v-row class="secondary lighten-4">
+        <v-col class="text-center body-2 d-flex justify-center align-center pb-1">
+          <a class="px-2 grey--text text--darken-4" href="#">Preguntas Frecuentes</a>
+          <a class="px-2 grey--text text--darken-4" href="#">Contáctanos</a>
+          <a class="px-2 grey--text text--darken-4" href="#">Términos y Condiciones</a>
+        </v-col>
+      </v-row>
+    </v-container>
 
     </v-main>
     
@@ -391,9 +399,9 @@
 
 <style lang="scss">
 
-
   iframe {
     width: 100%;
+    height: 100%;
   }
 
   .menu {
@@ -438,7 +446,6 @@
 
 
 <script>
-  
   export default {
     name: 'Eduparque',
 

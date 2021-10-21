@@ -2,7 +2,7 @@
   <v-container class="pa-0" fluid>
     <v-hover>
       <template v-slot:default="{ hover }">
-        <v-parallax height="300"
+        <v-parallax height="300" 
           src="https://via.placeholder.com/1200x500">
           <v-overlay absolute class="align-end justify-start"
             :opacity="(hover) ? 0.3 : 0.5">

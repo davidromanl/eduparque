@@ -88,14 +88,6 @@
   margin-bottom: 2px;
 }
 
-.fixed {
-  position: -webkit-sticky;
-  position: sticky;
-  top: 4rem;
-  z-index: 2;
-  height: 20px;
-}
-
 .float-end {
   z-index: 4;
 }

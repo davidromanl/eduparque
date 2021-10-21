@@ -3,6 +3,6 @@ module.exports = {
     'vuetify'
   ],
 
-  //publicPath: '/lms/',
-  //outputDir: 'lms'
+  publicPath: '/lms/',
+  outputDir: 'lms'
 }

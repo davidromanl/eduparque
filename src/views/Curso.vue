@@ -139,7 +139,6 @@
   position: sticky;
   top: 4.1rem;
   z-index: 2;
-  height: 20px;
 }
 
 </style>

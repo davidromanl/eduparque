@@ -2,6 +2,7 @@ import '@mdi/font/css/materialdesignicons.css';
 import Vue from 'vue';
 import Vuetify from 'vuetify/lib/framework';
 
+
 // import plugin
 import { TiptapVuetifyPlugin } from 'tiptap-vuetify'
 // don't forget to import CSS styles

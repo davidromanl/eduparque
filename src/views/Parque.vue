@@ -1,11 +1,23 @@
 <template>
-  <v-container fill-height>
-      <v-row>
-          <v-col>
-              <span class="text-h2">e</span>
-              <span class="text-h4">duparque</span>
-          </v-col>
-      </v-row>
+  <v-container class="pa-0" fluid>
+    <v-hover>
+      <template v-slot:default="{ hover }">
+        <v-parallax height="300"
+          src="https://via.placeholder.com/1200x500">
+          <v-overlay absolute class="align-end justify-start"
+            :opacity="(hover) ? 0.3 : 0.5">
+              <div class="titulos pb-4 pl-10" :class="{hover : hover}">
+                <h2>
+                  <span class="text-h2">e</span>
+                  <span class="text-h4">duparque</span>
+                </h2>
+                <p>Posts, articulos y noticias</p>
+              </div>
+          </v-overlay>
+        </v-parallax>
+      </template>
+    </v-hover>
+    <v-container>
       <v-row>
         <v-col>
           <v-text-field
@@ -18,6 +30,7 @@
           nro de columnas: {{nro_cols}}
         </v-col>
       </v-row>
+      
       <v-row>
         <v-col :md="col.size"
           v-for="col,k in cols" :key="k">
@@ -33,7 +46,7 @@
           </v-card>
         </v-col>
       </v-row>
-      {{cols}}
+    </v-container>
   </v-container>
 </template>
 

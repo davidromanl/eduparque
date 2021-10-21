@@ -1,11 +1,19 @@
 <template>
   <v-container class="pa-0" fluid>
-    <v-parallax height="300"
-      src="https://via.placeholder.com/1200x500">
-      <v-container align-end>
-        <h2>Nuestros cursos</h2>
-      </v-container>
-    </v-parallax>
+    <v-hover>
+      <template v-slot:default="{ hover }">
+        <v-parallax height="300"
+          src="https://via.placeholder.com/1200x500">
+          <v-overlay absolute class="align-end justify-start"
+            :opacity="(hover) ? 0.3 : 0.5">
+              <div class="titulos pb-4 pl-10" :class="{hover : hover}">
+                <h2>Cursos</h2>
+                <p>Explorar cursos</p>
+              </div>
+          </v-overlay>
+        </v-parallax>
+      </template>
+    </v-hover>
     <v-container>
       <v-row align="end">
         <v-col  v-for="n in cursos" :key="n.id" cols="12" md="4" sm="6">

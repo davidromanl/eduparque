@@ -19,8 +19,10 @@
                   </v-tab-item>
                 </v-tabs-items>
               </v-card-title>
-              <v-tabs grow max v-model="tab">
-                <v-tooltip top>
+              <v-tabs grow max v-model="tab" color="success">
+                <v-tooltip bottom
+                   transition="scroll-x-reverse-transition"
+                  nudge-bottom="-8">
                   <template v-slot:activator="{ on }">
                     <v-tab v-on="on">
                       <v-icon>account_box</v-icon>
@@ -28,7 +30,9 @@
                   </template>
                   <span>Iniciar sesión</span>
                 </v-tooltip>
-                <v-tooltip top>
+                <v-tooltip bottom
+                   transition="scroll-x-reverse-transition"
+                  nudge-bottom="-8">
                   <template v-slot:activator="{ on }">
                     <v-tab v-on="on">
                       <v-icon>person_add</v-icon>
@@ -36,7 +40,9 @@
                   </template>
                   <span>Registro nuevo usuario</span>
                 </v-tooltip>
-                <v-tooltip top>
+                <v-tooltip bottom
+                   transition="scroll-x-reverse-transition"
+                  nudge-bottom="-8">
                   <template v-slot:activator="{ on }">
                     <v-tab v-on="on">
                       <v-icon>refresh</v-icon>
@@ -85,8 +91,10 @@
                       @click:append="show = !show"
                     ></v-text-field>
                   </v-expand-transition>
-                  <p v-if="tab==0" class="text-md-center"><a @click="tab = 2">¿Olvido su contraseña?</a></p>
-                  <v-checkbox  v-if="tab==1"
+                  <div v-if="tab==0" class="text-md-center pb-2">
+                    <a @click="tab = 2">¿Olvido su contraseña?</a>
+                  </div>
+                  <v-checkbox class="mt-0" v-if="tab==1"
                       :rules="[reglas.requerido]"
                       v-model="checkbox">
                     <template v-slot:label>
@@ -95,20 +103,31 @@
                         href="https://vuetifyjs.com">Términos y condiciones</a><v-icon right>mdi-open-in-new</v-icon></div>
                     </template>
                   </v-checkbox>
-                  <p v-if="tab==2" class="text-md-center">Ingrese la dirección de correo registrada para restablecer una nueva contraseña.</p>
-                  
+                  <div v-if="tab==2" class="text-md-center">Ingrese la dirección de correo registrada para restablecer una nueva contraseña.
+                  </div>
+              
+                <div style="width:310px;" class="ma-auto" :class="{ captcha: captcha}">
+                  <vue-recaptcha 
+                    @verify="onVerify" @error="onError" @expired="onError"
+                    :loadRecaptchaScript="true"
+                    sitekey="6Ld2dOQcAAAAAE_6gbAtOUj48msSagvtMT23rKug">
+                  </vue-recaptcha>
+                </div>
+              
               </v-card-text>
-              <v-card-actions>
-                <v-btn v-if="tab == 0" @click="tab = 1">Registro</v-btn>
-                <v-btn v-else @click="tab = 0">Cancelar</v-btn>
-                <v-spacer></v-spacer>
-                <v-btn type="submit"
-                  v-if="tab==0"
-                  color="success"
-                  :disabled="!valid"
-                  >Ingresar</v-btn>
-                <v-btn v-else type="submit" color="primary">Enviar</v-btn>
-              </v-card-actions>
+              <v-scroll-y-transition>
+                <v-card-actions key="2" v-show="captcha">
+                  <v-btn color="orange" v-if="tab == 0" @click="tab = 1">Registro</v-btn>
+                  <v-btn v-else @click="tab = 0">Cancelar</v-btn>
+                  <v-spacer></v-spacer>
+                  <v-btn type="submit"
+                    v-if="tab==0"
+                    color="success"
+                    :disabled="!valid"
+                    >Ingresar</v-btn>
+                  <v-btn v-else type="submit" color="primary">Enviar</v-btn>
+                </v-card-actions>
+              </v-scroll-y-transition>
             </v-card>
           </v-form>
         </v-flex>
@@ -136,12 +155,21 @@
   border-radius: 3px;
 }
 
+.captcha {
+  height: 0px;
+  overflow: hidden;
+  transition-property: all;
+  transition-duration: 200ms;
+}
+
 </style>
 
 <script>
+import VueRecaptcha from 'vue-recaptcha'
+
 export default {
   name: "Login",
-
+  components: { VueRecaptcha },
   data: () => ({
     tab: null,
     show: false,
@@ -150,6 +178,7 @@ export default {
     user: {},
     msg_on: false,
     msg_type: 'info',
+    captcha: false,
     msg: '',
 
     reglas: {
@@ -168,6 +197,13 @@ export default {
 
 
   methods: {
+    onVerify() {
+      this.captcha = true
+    },
+    onError() {
+      this.captcha = false
+    },
+
     enviar() {
       if(this.$refs.form.validate()) {
         if(this.tab === 0)

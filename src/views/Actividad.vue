@@ -2,7 +2,6 @@
   <v-container fluid>
     <v-row >
       <v-col class="pa-0">
-      
         <v-fab-transition>
           <v-btn class="ma-3" fab small
             v-if="!$store.state.drawer"
@@ -11,18 +10,17 @@
             <v-icon class="mt-3 mb-3" dark>mdi-menu-open</v-icon>
           </v-btn>
         </v-fab-transition>
-        <v-responsive :aspect-ratio="16/9">
-          <iframe class="fill-height" :src="'https://www.youtube.com/embed/'+actividad.youtube+'?autoplay='+autoplay"
-            title="YouTube video player" frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen></iframe>
-          </v-responsive>
+        <v-responsive :class="{fixed: fixed}" :aspect-ratio="16/9">
+          <youtube resize :video-id="actividad.youtube" ref="youtube"></youtube>
+        </v-responsive>
         <v-text-field
           label="Youtube"
           v-model="actividad.youtube"
         ></v-text-field>
         
-        <v-toolbar dense color="grey lighten-2">
+        <v-toolbar dense
+          class="fixed" :class="{fixed_sm: fixed}"
+          color="grey lighten-2">
           <v-icon left large>mdi-book</v-icon>
           <div>
             <h3>{{ curso.nombre }}</h3>
@@ -60,8 +58,8 @@
           </v-btn-toggle>
         </v-toolbar>
 
-        
             <v-layout column class="ma-4 pa-2">
+
               <v-row>
                 <v-col class="contenido"
                   :class="{'hide':loading}">
@@ -113,6 +111,17 @@
   max-width: 100%;
 }
 
+.fixed_sm {
+    top: 18em !important;
+}
+.fixed {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 4.3em;
+    z-index: 2;
+    height: auto;
+  }
+
 .contenido {
   transition-property: all;
   transition-duration: 300ms;
@@ -128,11 +137,16 @@
   min-height: 400px;
   opacity: 0;
 }
+
 </style>
 
 <script>
 import Recursos from '../components/Recursos.vue'
 import Aportes from '../components/Aportes.vue'
+import Vue from 'vue'
+import VueYoutube from 'vue-youtube'
+
+Vue.use(VueYoutube)
 
 import {
   TiptapVuetify,
@@ -224,6 +238,9 @@ import {
       next_disabled() {
         return this.index === this.actividades.length - 1
       },
+      fixed() {
+        return this.$vuetify.breakpoint.name === 'xs'
+      }
     },
 
     watch: {
@@ -234,10 +251,10 @@ import {
       overlay (val) {
         val && setTimeout(() => {
           this.overlay = false
-          setTimeout(()=>{
-            this.$vuetify.goTo('#app',
-              { duration: 700, easing: 'easeInOutCubic' })
-            }, 500)
+          // setTimeout(()=>{
+          //   this.$vuetify.goTo('#app',
+          //     { duration: 700, easing: 'easeInOutCubic' })
+          //   }, 500)
         }, 1500)
       }
     },
