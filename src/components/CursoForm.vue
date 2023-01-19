@@ -48,6 +48,7 @@
     methods: {
         guardar() {
             if(this.$refs.form.validate()) {
+                if(!this.curso.contenido) this.curso.contenido = ''
                 this.$store.dispatch('curso/guardar',this.curso)
                 this.$emit("cerrar")
             }

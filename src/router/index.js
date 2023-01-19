@@ -8,20 +8,39 @@ import Login from '../views/Login.vue'
 import Actividad from '../views/Actividad.vue'
 import Usuario from '../views/Usuario.vue'
 import Blog from '../views/Blog.vue'
+import Post from '../views/Post.vue'
 import Parque from '../views/Parque.vue'
-import Foro from '../views/Foro.vue'
 
 
-const ifNotAuthenticated = (to, from, next) => {
-  (!store.getters["usuario/isAuthenticated"])
+let url = '/'
+
+const ifNotAuthenticated = async (to, from, next) => {
+  
+  if(store.getters["usuario/isAuthenticated"])
+    if(store.getters["usuario/noUser"])
+      await store.dispatch("usuario/get")
+  
+  url = (from.path == "/login") ? "/usuario" : from.path
+  
+  return (!store.getters["usuario/isAuthenticated"])
     ? next()
-    : next('/')
+    : next(url)
+  }
+
+const ruta = () => { 
+  return { url }
 }
 
-const ifAuthenticated = (to, from, next) => {
-  (store.getters["usuario/isAuthenticated"])
+const ifAuthenticated = async (to, from, next) => {
+  url = (from.path == "/login") ? "/usuario" : from.path
+  
+  if(store.getters["usuario/isAuthenticated"])
+    if(store.getters["usuario/noUser"])
+      await store.dispatch("usuario/get")
+
+  return (store.getters["usuario/isAuthenticated"])
     ? next()
-    : next('/login')
+    : next("/login")
 }
 
 const routes = [
@@ -36,14 +55,19 @@ const routes = [
     component: Blog
   },
   {
+    path: '/blog/:id',
+    name: 'Entrada Blog',
+    component: Post
+  },
+  {
     path: '/parque',
     name: 'Parque',
     component: Parque
   },
   {
-    path: '/foro',
-    name: 'Foro',
-    component: Foro
+    path: '/parque/:uri',
+    name: 'Eduparque',
+    component: Parque
   },
   {
     path: '/cursos',
@@ -64,6 +88,7 @@ const routes = [
   {
     path: '/login',
     name: 'Login',
+    props: ruta,
     component: Login,
     beforeEnter: ifNotAuthenticated,
   },

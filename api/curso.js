@@ -1,7 +1,6 @@
 const express = require('express'),
     router = express.Router(),
-    knex = require('./mysqldb'),
-    auth = require("./auth")
+    knex = require('./mysqldb')
 
 function get_cursos() {
     return knex('cursos')

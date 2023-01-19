@@ -1,11 +1,13 @@
 const express = require('express'),
-                app = express(),
-                cors = require('cors'),
-                curso = require('./curso'),
-                usuario = require('./usuario'),
-                actividad = require('./actividad'),
-                {uploadImage, getImage, upload} = require('./imgfiles'),
-                unidad = require('./unidad')
+        app = express(),
+        cors = require('cors'),
+        parque = require('./parque'),
+        curso = require('./curso'),
+        usuario = require('./usuario'),
+        actividad = require('./actividad'),
+        blog = require('./blog'),
+        {uploadImage, getImage, upload} = require('./imgfiles'),
+        unidad = require('./unidad')
 
 app.use(express.json({limit: '50mb'}))
 
@@ -23,10 +25,12 @@ app.get('/api', (req, res) => {
 } )
 
 
+app.use('/api/parque', parque)
 app.use('/api/curso', curso)
 app.use('/api/usuario', usuario)
 app.use('/api/unidad', unidad)
 app.use('/api/actividad', actividad)
+app.use('/api/blog', blog)
 
 app.get('/api/img/:tipo/:id', getImage)
 app.post('/api/upload/:tipo', upload.single('file'), uploadImage)

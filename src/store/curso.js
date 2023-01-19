@@ -1,7 +1,7 @@
 import axios from "./axios"
 
 const state = () => ({
-    curso: null,
+    curso: {},
     cursos: [],
 })
 
@@ -18,6 +18,9 @@ const actions = {
     async get_curso({commit}, id) {
         const { data } = await axios.get("/curso/"+id)
         commit("set_curso", data )
+    },
+    reset_curso({commit}) {
+        commit("set_curso", {} )
     },
     async get_cursos({commit}) {
         const { data } = await axios.get("/curso")

@@ -6,7 +6,7 @@ const state = () => ({
     materiales: [],
     aportes: [],
     preguntas: [],
-    actividad: null,
+    actividad: {},
 })
 
 const mutations = {

@@ -5,7 +5,7 @@ const dbconf = {
         host : 'localhost',
         user : 'root',
         password : '',
-        database : 'ci4'
+        database : 'eduparque'
     }
 }
 
