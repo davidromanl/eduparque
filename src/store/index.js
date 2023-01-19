@@ -1,9 +1,11 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import parque from './parque'
 import curso from './curso'
+import usuario from './usuario'
 import unidad from './unidad'
 import actividad from './actividad'
-import usuario from './usuario'
+import blog from './blog'
 import axios from "./axios"
 
 Vue.use(Vuex)
@@ -11,7 +13,6 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     drawer: false,
-    fijo: false,
     loading: false
   },
   mutations: {
@@ -24,25 +25,29 @@ export default new Vuex.Store({
   },
   actions: {
     
-    start_loading({commit,dispatch}) {
-      
-      axios.interceptors.request.use((config) => {
-        commit('loading', true)
-        return config
-      }, (error) => {
-        commit('loading', false)
-        
-        return Promise.reject(error)
-      })
+    start_loading({commit}) {
+     
+      axios.interceptors.request.use(
+        (config) => {
+            commit('loading', true)
+            return config
+          },
+        (error) => {
+          commit('loading', false)
+          return Promise.reject(error)
+          }
+        )
 
-      axios.interceptors.response.use((response) => {
-        commit('loading', false)
-        return response
-      }, (error) => {
-        commit('loading', false)
-        dispatch("usuario/logout")
-        return Promise.reject(error)
-      })
+      axios.interceptors.response.use(
+        (response) => {
+            commit('loading', false)
+            return response
+          },
+        (error) => {
+            commit('loading', false)
+            return Promise.reject(error)
+          }
+        )
     
     },
 
@@ -56,7 +61,8 @@ export default new Vuex.Store({
     async uploadImage({state}, {file,tipo}) {
       let formData = new FormData()
       formData.append('file', file)
-      formData.append('id', state[tipo][tipo].id)
+      const id = state[tipo][tipo].id || 0
+      formData.append('id', id)
       const config = { headers: { 'Content-Type': 'multipart/form-data' }}
       const data = await axios.post("/upload/"+tipo, formData, config)
       return data
@@ -64,6 +70,11 @@ export default new Vuex.Store({
 
   },
   modules: {
-    curso, usuario, unidad, actividad
+    parque,
+    curso,
+    usuario,
+    unidad,
+    actividad,
+    blog
   }
 })

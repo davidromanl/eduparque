@@ -1,7 +1,7 @@
 const express = require('express'),
     router = express.Router(),
-    knex = require('./mysqldb'),
-    ba64 = require("ba64")
+    knex = require('./mysqldb')
+    //ba64 = require("ba64")
 
 router.get('/', async (req, res) => {
     const data = await knex('actividades as a')
@@ -13,6 +13,7 @@ router.get('/', async (req, res) => {
 
 
 router.get('/:id', async (req, res) => {
+    
     const actividad = await knex('actividades')
             .where(req.params).first('*')
     const recursos = await knex('recursos')
@@ -33,8 +34,8 @@ router.post('/guardar', async (req, res) => {
     const img = imgRex.exec(descripcion)
     
     if(img !== null) {
-        ba64.writeImageSync("./public/image1.jpg", img[0])
-        req.body.descripcion = descripcion.replace(img[0],"")
+        //ba64.writeImageSync("./public/image1.jpg", img[0])
+        req.body.descripcion = descripcion.replace(img[0],"=''")
     }
 
     await knex('actividades').insert(req.body)

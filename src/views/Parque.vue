@@ -17,89 +17,165 @@
         </v-parallax>
       </template>
     </v-hover>
-    <v-container>
+    <v-container 
+      :fluid="(row.fluid==1)"
+      v-for="row,r in filas" :key="r">
       <v-row>
-        <v-col>
-          <v-text-field
-            v-model="cuantas"
-            type="number"
-            min="1" max="6"
-            label="cuantas columnas"
-          ></v-text-field>
-          <v-btn @click="add_row">añadirfila</v-btn>
-          nro de columnas: {{nro_cols}}
+        <v-col :md="col"
+          v-for="col,c in JSON.parse(row.columnas)" :key="c">
+          <div v-if="celda(row.id,c)">
+            <div v-html="celda(row.id,c).contenido"></div>
+            <v-icon @click="open_contenido(row.id,c)">mdi-pencil</v-icon>
+          </div>
+          <div v-else>
+            <v-icon @click="add_contenido(row.id,c)">mdi-plus</v-icon>
+          </div>
+          
         </v-col>
       </v-row>
-      
+    </v-container>
+
+<!-- Admin -->
+    <v-container>
+      <v-divider></v-divider>
       <v-row>
-        <v-col :md="col.size"
-          v-for="col,k in cols" :key="k">
-          <v-card>
-            <v-card-actions>
-              <v-icon v-if="k!==0"
-                @click="left(k)" >mdi-arrow-left</v-icon>
-              {{col.size}}
-              <v-spacer></v-spacer>
-              <v-icon  v-if="k!==cuantas-1"
-                @click="right(k)">mdi-arrow-right</v-icon>
-            </v-card-actions>
+        <v-col><h2>Admin</h2></v-col>
+      </v-row>
+
+      <v-row>
+        <v-col>
+          <v-radio-group row v-model="row">
+            Nro. columnas:
+            <v-radio v-for="n in 4" :key="n" :label="''+n"></v-radio>
+          </v-radio-group>
+        </v-col>
+        <v-col cols="auto">
+          <v-switch v-model="fluid" label="Completo"></v-switch>
+        </v-col>
+        <v-col cols="auto">
+          <v-btn @click="add_fila" color="success">guardar</v-btn>
+        </v-col>
+      </v-row>
+    </v-container>
+    <v-container :fluid="fluid">
+      <v-row>
+        <v-col :md="col"
+          v-for="col,k in rowsizes[row]" :key="k">
+          <v-card class="d-flex justify-space-between">
+            <v-icon
+              :disabled="(rowsizes[row][k-1] <= 1 || k==0)"
+              @click="sizerow(k-1,k)"
+              >mdi-arrow-left</v-icon>
+            <v-icon
+              :disabled="(rowsizes[row][k+1] <= 1 || k==row)"
+              @click="sizerow(k+1,k)"
+              >mdi-arrow-right</v-icon>
           </v-card>
         </v-col>
       </v-row>
     </v-container>
+    {{pagina}}
+    <v-dialog
+      max-width="650"
+      v-model="dialog"
+      transition="dialog-transition"
+    >
+      <ContenidoForm
+        @cerrar="dialog=false"
+        :edit_contenido="edit_contenido" />
+    </v-dialog>
+
   </v-container>
 </template>
 
 <script>
 // @ is an alias to /src
+import ContenidoForm from '@/components/ContenidoForm.vue'
+import { mapState } from 'vuex'
 
 export default {
   name: 'Parque',
 
   data: () => ({
-    cuantas: 1,
-    cols: [],
+    fluid: false,
+    row: 0,
+    edit_contenido: {},
+    dialog: false,
+    rowsizes: {
+      0:[12],
+      1:[6,6],
+      2:[4,4,4],
+      3:[3,3,3,3]
+    }
   }),
 
+  components: { ContenidoForm },
+
   computed: {
-    nro_cols() {
-      return this.cols.length
-    }
+    uri() {
+      return this.$route.params.uri || "info"
+    },
+    ...mapState({
+      pagina: state => state.parque.pagina,
+      filas: state => state.parque.filas,
+      contenidos: state => state.parque.contenidos
+    })
+        
   },
 
   watch: {
-    
+    uri() {
+      this.get_pagina()
+      return
+    }
   },
 
   created() {
-    
+    this.get_pagina()
   },
 
   methods: {
-    add_row() {
-      const cols = Number(this.cuantas)
-      this.cols = []
-      for (let i = 1; i <= cols; i++) {
-        let size = (cols==5)
-          ? (i==5) ? 4 : 2
-          : 12/cols
-        let col = { size }
-        this.cols.push(col)
-      }
+
+    get_pagina() {
+      this.$store.dispatch("parque/get_pagina", this.uri)
     },
 
-    right(k) {
-      if(this.cols[k+1].size > 1) {
-        this.cols[k].size++
-        this.cols[k+1].size--
+    add_fila() {
+      const fila = {
+        id_pagina: this.pagina.id,
+        columnas: this.rowsizes[this.row],
+        orden: 1,
+        fluid: this.fluid
       }
+      this.$store.dispatch("parque/add_fila", fila)
     },
-    left(k) {
-      if(this.cols[k-1].size > 1) {
-        this.cols[k].size++
-        this.cols[k-1].size--
-      }
+    
+    add_contenido(row,col) {
+        this.edit_contenido = {
+          id_fila: row,
+          columna: col,
+        }
+        this.dialog = true
     },
+    
+    open_contenido(row,col) {
+      //console.log(row,col)
+      this.edit_contenido = Object.assign({}, this.celda(row,col))
+      this.dialog = true
+    },
+
+    sizerow(id,k) {
+      //this.$set(this.rowsizes[row],k,this.rowsizes[row][k-1]-1)
+      let { $set, rowsizes, row } = this
+      $set(rowsizes[row],id,rowsizes[row][id]-1)
+      $set(rowsizes[row],k,rowsizes[row][k]+1)
+    },
+
+    celda(row,col) {
+      const celda = this.contenidos.filter(
+        ( { id_fila, columna } ) => id_fila == row && columna == col )
+      return celda[0]
+    }
   }
 }
 </script>

@@ -3,13 +3,13 @@ const express = require('express'),
     bcrypt = require('bcrypt'),
     jwt = require('jsonwebtoken'),
     knex = require('./mysqldb'),
-    auth = require('./auth'),
-    fs = require('fs'),
-    multer  = require('multer'),
-    upload = multer({ dest: 'public/' }),
-    sharp = require('sharp')
+    auth = require('./auth')
+    //fs = require('fs'),
+    //multer  = require('multer'),
+    //upload = multer({ dest: 'public/' }),
+    //sharp = require('sharp')
 
-sharp.cache(false)
+//sharp.cache(false)
 
 function buscar_usuario(email) {
     return knex('usuarios')
@@ -18,10 +18,20 @@ function buscar_usuario(email) {
 }
 
 router.get('/', auth, async (req, res) => {
+    if(req.error) return res.json(false)
     const {email} = req.decoded
     const buscar = await buscar_usuario(email)
     return res.json(buscar)
 })
+
+router.post('/guardar', auth, async (req, res) => {
+    if(req.error) return res.json(false)
+    await knex('usuarios').insert(req.body)
+        .onConflict('id')
+        .merge()
+    return res.json(true)
+})
+
 /* 
 router.post('/foto', upload.single('file'), (req, res) => {
     
@@ -80,7 +90,7 @@ router.post('/login', async (req, res) => {
         const token = jwt.sign(
             { email: email },
             'EstaEsLaAPP',
-            { expiresIn: '30m' })
+            { expiresIn: '1m' })
         const data = { token: token, user: buscar }
         res.status(200).json(data)
     } else {

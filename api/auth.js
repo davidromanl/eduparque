@@ -3,15 +3,16 @@ const jwt = require("jsonwebtoken")
 const verifyToken = (req, res, next) => {
 
     const token = req.headers['authorization']
-
+    req.error = false
     if (token === '') {
-        return res.status(403).send("A token is required for authentication")
-    }
-    try {
-        const decoded = jwt.verify(token, 'EstaEsLaAPP')
-        req.decoded = decoded
-    } catch (err) {
-        return res.status(401).send("Invalid Token")
+        req.error = true
+    } else {
+        try {
+            const decoded = jwt.verify(token, 'EstaEsLaAPP')
+            req.decoded = decoded
+        } catch (err) {
+            req.error = true
+        }
     }
     return next()
 }

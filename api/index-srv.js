@@ -3,6 +3,7 @@ const express = require('express'),
                 curso = require('./curso'),
                 usuario = require('./usuario'),
                 actividad = require('./actividad'),
+                blog = require('./blog'),
                 {uploadImage, getImage, upload} = require('./imgfiles'),
                 unidad = require('./unidad')
 
@@ -24,6 +25,7 @@ app.use('/api/curso', curso)
 app.use('/api/usuario', usuario)
 app.use('/api/unidad', unidad)
 app.use('/api/actividad', actividad)
+app.use('/api/blog', blog)
 
 app.get('/api/img/:tipo/:id', getImage)
 app.post('/api/upload/:tipo', upload.single('file'), uploadImage)
